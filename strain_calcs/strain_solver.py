@@ -72,7 +72,7 @@ c = [c11_d, c12_d, c44_d]
 # ref_Yaxis = [0,1/m.sqrt(2),-1/m.sqrt(2)]
 # ref_Zaxis = [0,1/m.sqrt(2),1/m.sqrt(2)]
 
-axis_vals = [[0, 0, 1], [0, 1/m.sqrt(2), 1], [0, -1/m.sqrt(2), 1], [1/m.sqrt(6), 2/m.sqrt(6), 3/m.sqrt(6)], [-3/m.sqrt(8), -1/m.sqrt(8), -4/m.sqrt(8)]]
+axis_vals = [[0, 1/m.sqrt(2), 1], [0, -1/m.sqrt(2), 1], [1/m.sqrt(6), 2/m.sqrt(6), 3/m.sqrt(6)], [-3/m.sqrt(8), -1/m.sqrt(8), -4/m.sqrt(8)]]
 folder = p.cwd() / "n471-proj-carrot" / "strain_calcs"
 # Modify folder to match your dir, currently on my dir. 
 name_cnt = 1
