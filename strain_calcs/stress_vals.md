@@ -4,16 +4,16 @@ Takes in stress from the a given reference axis, and returns the strain matrix (
 
 Input stress vals are defined in a separate file `stress.txt'. The syntax for the file is: 
 
-data for 3x3 1
-{----}
-data for 3x3 2
-{----}
-etc
+data for 3x3 1  
+{----}  
+data for 3x3 2  
+{----}  
+etc  
 
-Data for 3x3 is given in the following format
-num,num,num,
-num,num,num,
-num,num,num,
+Data for 3x3 is given in the following format  
+num,num,num,  
+num,num,num,  
+num,num,num,  
 
 
 {----} lines just need to contain the '-' character to be skipped. 
