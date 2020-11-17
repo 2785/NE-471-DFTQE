@@ -1,7 +1,10 @@
 import math as m
 import numpy as np
 from pathlib import Path as p
-from zipfile import ZipFile as z
+from tarfile import TarFile as t
+import os
+import gzip as gz
+import shutil
 
 def calculator( ref_Xaxis, ref_Yaxis, ref_Zaxis, stress, c_d , ai = [0.25,0.25,0.25]):
     # Setting up state
@@ -77,17 +80,19 @@ folder = p.cwd() / "n471-proj-carrot" / "strain_calcs"
 # Modify folder to match your dir, currently on my dir. 
 name_cnt = 1
 compound = "Gallium Arsenide diamond structure\n"
-zipfile = folder / "files.zip"
-# zipper = z.open(zipfile.__str__(), 'a')
+zipfile = folder / "nano_hub_sim_files.tar.gz" #creates tarball file
+# zipper = gz.open(zipfile, 'w')
+zipper = t.open(zipfile,'w:gz')
 for g, x_val in enumerate(axis_vals):
     ref_X = x_val
     for h, y_val in enumerate(axis_vals):
-        if h != g: 
+        if (h != g) and (x_val != y_val): 
             ref_Y = y_val
         else:
             continue
         for j, z_val in enumerate(axis_vals):
-            if j != g and j != h: #or z_val == y_val: to take out duplicates
+            # if j != g and j != h: #or z_val == y_val: to take out duplicates
+            if (j != g) and (z_val != y_val): 
                 ref_Z= z_val
                 #set up some system to define the stress values. 
 
@@ -114,7 +119,7 @@ for g, x_val in enumerate(axis_vals):
                             # store the values in text file in the format for nanohub
                             # open file
                             fname = "nano_hub_test_"+str(name_cnt)+".txt"
-                            filename = folder / fname
+                            filename = fname
                             f = open(filename, "w")
                             f.write("2\n"+compound)
                             f.write("Ga 0.0 0.0 0.0\n")
@@ -122,13 +127,12 @@ for g, x_val in enumerate(axis_vals):
                             f.write("---\n")
                             f.write("X refaxis: " + str(x_val) + "\tY ref axis " + str(y_val) + "\tZ refaxis " + str(z_val) + "\n")
                             f.close()
-                            # zipper.write(filename)
-                            # p.unlink(filename)
+                            cmd_clean = "rm " + filename.__str__()
+                            zipper.add(filename) # Adds file to tarball
+                            x_rm = os.system(cmd_clean) # Deletes original file
                             name_cnt += 1
                             stress = []
-                            # make sure that the number of stress matrices equals the number of axis vals. 
                     cs.close()
             else:
                 continue
-# zipper.close()
-#zip *.txt nano_hub_files.zip
+zipper.close()
