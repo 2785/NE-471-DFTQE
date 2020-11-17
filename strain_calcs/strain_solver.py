@@ -72,7 +72,7 @@ c = [c11_d, c12_d, c44_d]
 # ref_Yaxis = [0,1/m.sqrt(2),-1/m.sqrt(2)]
 # ref_Zaxis = [0,1/m.sqrt(2),1/m.sqrt(2)]
 
-axis_vals = [[0, 0, 1], [0, 2*m.sqrt(2), 1], [0, m.sqrt(2), 1] ]
+axis_vals = [[0, 0, 1], [0, 1/m.sqrt(2), 1], [0, -1/m.sqrt(2), 1], [1/m.sqrt(6), 2/m.sqrt(6), 3/m.sqrt(6)], [-3/m.sqrt(8), -1/m.sqrt(8), -4/m.sqrt(8)]]
 folder = p.cwd() / "n471-proj-carrot" / "strain_calcs"
 # Modify folder to match your dir, currently on my dir. 
 name_cnt = 1
@@ -87,7 +87,7 @@ for g, x_val in enumerate(axis_vals):
         else:
             continue
         for j, z_val in enumerate(axis_vals):
-            if j != g and j != h:
+            if j != g and j != h: #or z_val == y_val: to take out duplicates
                 ref_Z= z_val
                 #set up some system to define the stress values. 
 
@@ -119,6 +119,8 @@ for g, x_val in enumerate(axis_vals):
                             f.write("2\n"+compound)
                             f.write("Ga 0.0 0.0 0.0\n")
                             f.write("As " + str(sol[0]) + " " + str(sol[1]) + " " + str(sol[2]) + "\n")
+                            f.write("---\n")
+                            f.write("X refaxis: " + str(x_val) + "\tY ref axis " + str(y_val) + "\tZ refaxis " + str(z_val) + "\n")
                             f.close()
                             # zipper.write(filename)
                             # p.unlink(filename)
