@@ -3,8 +3,6 @@ import numpy as np
 from pathlib import Path as p
 from tarfile import TarFile as t
 import os
-import gzip as gz
-import shutil
 
 def calculator( ref_Xaxis, ref_Yaxis, ref_Zaxis, stress, c_d , ai = [0.25,0.25,0.25]):
     # Setting up state
