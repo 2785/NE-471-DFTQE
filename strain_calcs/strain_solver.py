@@ -5,6 +5,23 @@ from tarfile import TarFile as t
 import os
 
 def calculator( ref_Xaxis, ref_Yaxis, ref_Zaxis, stress, c_d , ai = [0.25,0.25,0.25]):
+    '''
+    Strain calculator given the stress factors for a FCC crystal, and the REF axis.
+
+    Inputs: 
+        ref_Xaxis - reference axis for the X axis (list length 3)
+        ref_Yaxis - reference axis for the Y axis (list length 3)
+        ref_Zaxis - reference axis for the Z axis (list length 3)
+        stress - stress applied in the given reference axis (3x3 nested list)
+        c_d - stress constants for the solid to be solved for (since FCC this is 3membered list)
+        ai - this is the latice positions of the corner atoms (1/4,1/4,1/4).
+    Output:
+        Outputs a tuple of the new lattice positions of the unit cell. 
+        (atom1, atom2).
+        atom1 - List of length 3 indicating the lattice position of atom 1. 
+        atom2 - List of length 3 indicating the lattice positon of atom 2. 
+        Assuming formula is: Atom1Atom2
+    '''
     # Setting up state
     row = 3
     col = 3
@@ -27,10 +44,10 @@ def calculator( ref_Xaxis, ref_Yaxis, ref_Zaxis, stress, c_d , ai = [0.25,0.25,0
 
     stress_unit = np.zeros(size)
     #assuming square.
-    for i in range(size[0]):
-        for j in range(size[1]):
-            for k in range(size[0]):
-                for l in range(size[1]):
+    for i in range(row):
+        for j in range(col):
+            for k in range(col):
+                for l in range(row):
                     stress_unit[i][j] += a[i][k] * a[j][l] * stress[k][l]
 
 
@@ -59,7 +76,18 @@ def calculator( ref_Xaxis, ref_Yaxis, ref_Zaxis, stress, c_d , ai = [0.25,0.25,0
             strain[0][1] = strain_col[i]/2
             strain[1][0] = strain_col[i]/2
     strain_np = np.array(strain)
-    return (ai[0] + sum(strain_np[:,0]), ai[1] + sum(strain_np[:,1]), ai[2] + sum(strain_np[:,2]) )
+    atom2 = [ai[0],ai[1],ai[2]]
+    atom1 = [0,0,0]
+    for r_i in range(row):
+        for c_i in range(col):
+            if r_i == c_i :
+                atom1[r_i] += strain_np[r_i,c_i]
+            else:
+                atom2[c_i] += strain_np[r_i,c_i]
+    # return (ai[0] + sum(strain_np[:,0]), ai[1] + sum(strain_np[:,1]), ai[2] + sum(strain_np[:,2]) ) #this only changes the corner atoms
+    return (atom1,atom2) #this changes the entire structure
+    # atom2 represents those on the corner
+    # atom1 represents those on the face and center
     # Output strain given in the 1 0 0 ref axis. 
 
 # units of the below are dyn/cm^2
@@ -69,18 +97,14 @@ c44_d = 5.96e11
 
 c = [c11_d, c12_d, c44_d]
 
-# ref_Xaxis = [1,0,0]
-# ref_Yaxis = [0,1/m.sqrt(2),-1/m.sqrt(2)]
-# ref_Zaxis = [0,1/m.sqrt(2),1/m.sqrt(2)]
-
 axis_vals = [[0, 1/m.sqrt(2), 1], [0, -1/m.sqrt(2), 1], [1/m.sqrt(6), 2/m.sqrt(6), 3/m.sqrt(6)], [-3/m.sqrt(8), -1/m.sqrt(8), -4/m.sqrt(8)]]
 folder = p.cwd() / "n471-proj-carrot" / "strain_calcs"
 # Modify folder to match your dir, currently on my dir. 
 name_cnt = 1
 compound = "Gallium Arsenide diamond structure\n"
-zipfile = folder / "nano_hub_sim_files.tar.gz" #creates tarball file
+zipfile = folder / "test_files.tar.gz" #creates tarball file
 # zipper = gz.open(zipfile, 'w')
-zipper = t.open(zipfile,'w:gz')
+zipper = t.open(zipfile, 'w:gz')
 for g, x_val in enumerate(axis_vals):
     ref_X = x_val
     for h, y_val in enumerate(axis_vals):
@@ -108,22 +132,22 @@ for g, x_val in enumerate(axis_vals):
                         if "-" not in line:
                             while row_val != "\n":
                                 delim = row_val.index(',')
-                                temp += [float(row_val[:delim]),]
+                                temp += [float(row_val[:delim])*1e9,]
                                 row_val = row_val[delim+1:]
                             stress += [temp,]
                         else:
                             # do the calculations
-                            sol = calculator(ref_X, ref_Y, ref_Z, stress, c)
+                            (ga, ars) = calculator(ref_X, ref_Y, ref_Z, stress, c)
                             # store the values in text file in the format for nanohub
                             # open file
                             fname = "nano_hub_test_"+str(name_cnt)+".txt"
                             filename = fname
                             f = open(filename, "w")
                             f.write("2\n"+compound)
-                            f.write("Ga 0.0 0.0 0.0\n")
-                            f.write("As " + str(sol[0]) + " " + str(sol[1]) + " " + str(sol[2]) + "\n")
-                            f.write("---\n")
-                            f.write("X refaxis: " + str(x_val) + "\tY ref axis " + str(y_val) + "\tZ refaxis " + str(z_val) + "\n")
+                            f.write("Ga " + str(ga[0]) + " " + str(ga[1]) + " " + str(ga[2]) + "\n")
+                            f.write("As " + str(ars[0]) + " " + str(ars[1]) + " " + str(ars[2]) + "\n")
+                            # f.write("---\n")
+                            # f.write("X refaxis: " + str(x_val) + "\nY ref axis " + str(y_val) + "\nZ refaxis " + str(z_val) + "\n")
                             f.close()
                             cmd_clean = "rm " + filename.__str__()
                             zipper.add(filename) # Adds file to tarball
@@ -133,4 +157,11 @@ for g, x_val in enumerate(axis_vals):
                     cs.close()
             else:
                 continue
+latticefile = "lattice.txt"
+with open(latticefile, 'w') as l:
+    l.write("5.6325")
+l.close()
+zipper.add(latticefile)
+cmd = "rm " + latticefile.__str__()
+x_rm = os.system(cmd)
 zipper.close()
