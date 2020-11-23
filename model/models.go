@@ -44,6 +44,5 @@ type BandInfo struct {
 type Simulation struct {
 	Input Input
 	DoS   DoSInfo
-	Bands [][]BandEntry
+	Bands BandInfo
 }
-
