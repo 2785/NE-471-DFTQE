@@ -21,7 +21,7 @@ func RootCmd(cmd *cobra.Command, args []string) error {
 
 	// 1. Load Config
 	fmt.Printf("Loading Config...")
-	if !(viper.IsSet("inputdir") && viper.IsSet("outputdir")) {
+	if !(viper.IsSet("inputdir") && viper.IsSet("outputdir") && viper.IsSet("numberOfAxis") && viper.IsSet("numberOfStressVariation")) {
 		return errors.New("input or output not set")
 	}
 
@@ -214,6 +214,21 @@ func RootCmd(cmd *cobra.Command, args []string) error {
 	}
 
 	fmt.Println("  done")
+
+	numAxes := viper.GetInt("numberOfAxis")
+	numSets := viper.GetInt("numberOfStressVariation")
+
+	thingySets := func() [][]*model.Simulation {
+		out := make([][]*model.Simulation, numSets)
+		for i := 0; i < numSets; i++ {
+			out[i] = simulations[i*numAxes : (i+1)*numAxes]
+		}
+		return out
+	}()
+
+	someOtherThingySet := simulations[numAxes*numSets:]
+
+	_, _, _, _ = numAxes, numSets, thingySets, someOtherThingySet
 
 	_ = simulations
 
