@@ -134,7 +134,7 @@ with open(stresser, "r") as cs:
             f.write("Ga " + str(ga[0]) + " " + str(ga[1]) + " " + str(ga[2]) + "\n")
             f.write("As " + str(ars[0]) + " " + str(ars[1]) + " " + str(ars[2]) + "\n")
             # f.write("---\n")
-            # f.write("X refaxis: " + str(x_val) + "\nY ref axis " + str(y_val) + "\nZ refaxis " + str(z_val) + "\n")
+            # f.write("X refaxis: " + str(axis_vals[0]) + "\nY ref axis " + str(axis_vals[1]) + "\nZ refaxis " + str(axis_vals[2]) + "\n")
             f.close()
             cmd_clean = "rm " + filename.__str__()
             zipper.add(filename) # Adds file to tarball
