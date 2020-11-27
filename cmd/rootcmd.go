@@ -4,7 +4,9 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
+	"os"
 	"path"
+	"path/filepath"
 	"reflect"
 	"regexp"
 	"strconv"
@@ -13,6 +15,7 @@ import (
 	"github.com/2785/n471-proj-carrot/internal/nanohub"
 	"github.com/2785/n471-proj-carrot/internal/strain"
 	"github.com/2785/n471-proj-carrot/model"
+	"github.com/manifoldco/promptui"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -262,6 +265,42 @@ func RootCmd(cmd *cobra.Command, args []string) error {
 	_, _, _, _ = numAxes, numSets, thingySets, someOtherThingySet
 
 	_ = simulations
+
+	// 6. Start generating plots:
+
+	outPath := "./csv_out"
+
+	dosFileName := "dos.csv" // file contains dos curves for varying stress in the same axis
+	// 6.1 First Plot csv:
+	csvDos := make([][]string, len(simulations[0].DoS.DoS)+1)
+
+	csvDos[0] = make([]string, numSets+1)
+	csvDos[0][0] = "Energy (eV)"
+
+	for i := 1; i < len(csvDos); i++ {
+		csvDos[i] = make([]string, numSets+1)
+		csvDos[i][0] = fmt.Sprintf("%.6g", simulations[0].DoS.DoS[i-1].Energy)
+	}
+
+	for i := 0; i < numSets; i++ {
+		csvDos[0][i+1] = fmt.Sprintf("Run #%v", i*numAxes+1)
+		for j := 1; j < len(csvDos); j++ {
+			csvDos[j][i+1] = fmt.Sprintf("%.6g", simulations[i*numAxes+1].DoS.DoS[j-1].Density)
+		}
+	}
+
+	csvDosPath, err := filepath.Abs(path.Join(outPath, dosFileName))
+
+	if err != nil {
+		return fmt.Errorf("error resolving relative path: %w", err)
+	}
+	// Check if file exists
+	if _, err := os.Stat(csvDosPath); err == nil {
+		delPrompt := promptui.Prompt{
+			IsConfirm: true,
+		}
+
+	}
 
 	return nil
 }
