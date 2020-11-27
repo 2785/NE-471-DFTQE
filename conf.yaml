@@ -1,5 +1,5 @@
 inputDirComprehensive: ./strain_calcs/verbose_test_files
-inputDirLinearStress: ./strain_calcs/inc_test_files
+inputDirLinearStress: ./strain_calcs/verbose_inc_test_files
 outputdir: ./strain_calcs/results
 numberOfAxis: 24
 numberOfStressVariation: 5 
