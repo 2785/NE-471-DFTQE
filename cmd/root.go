@@ -62,9 +62,6 @@ func initConfig() {
 		viper.SetConfigName(".n471-proj-carrot")
 	}
 
-	viper.SetDefault("inputdir", "./strain_calcs/nano_hub_sim_files")
-	viper.SetDefault("outputdir", "./strain_calcs/results")
-
 	viper.AutomaticEnv() // read in environment variables that match
 
 	// If a config file is found, read it in.

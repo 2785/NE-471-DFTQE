@@ -21,7 +21,11 @@ func RootCmd(cmd *cobra.Command, args []string) error {
 
 	// 1. Load Config
 	fmt.Printf("Loading Config...")
-	if !(viper.IsSet("inputdir") && viper.IsSet("outputdir") && viper.IsSet("numberOfAxis") && viper.IsSet("numberOfStressVariation")) {
+	if !(viper.IsSet("inputDirComprehensive") &&
+		viper.IsSet("outputdir") &&
+		viper.IsSet("numberOfAxis") &&
+		viper.IsSet("numberOfStressVariation") &&
+		viper.IsSet("inputDirLinearStress")) {
 		return errors.New("input or output not set")
 	}
 
@@ -29,21 +33,21 @@ func RootCmd(cmd *cobra.Command, args []string) error {
 
 	// 2. Load nanohub input files
 
-	inputdir := viper.GetString("inputdir")
+	inputDirComprehensive := viper.GetString("inputDirComprehensive")
 
-	files, err := ioutil.ReadDir(inputdir)
+	files, err := ioutil.ReadDir(inputDirComprehensive)
 	if err != nil {
-		return fmt.Errorf("cannot read input directory: %w", err)
+		return fmt.Errorf("cannot read comprehensive stress input directory: %w", err)
 	}
 
 	fmt.Printf("discovered %v files\n", len(files))
 
 	simulations := make([]*model.Simulation, len(files))
 
-	fmt.Printf("Start Loading Input Files...")
+	fmt.Printf("Start Loading Files...")
 
 	for i, f := range files {
-		b, err := ioutil.ReadFile(path.Join(inputdir, f.Name()))
+		b, err := ioutil.ReadFile(path.Join(inputDirComprehensive, f.Name()))
 		if err != nil {
 			return fmt.Errorf("cannot read input file %s: %w", f, err)
 		}
@@ -56,6 +60,33 @@ func RootCmd(cmd *cobra.Command, args []string) error {
 		simulations[i] = &model.Simulation{
 			Input: *input,
 		}
+	}
+
+	inputDirLinear := viper.GetString("inputDirLinearStress")
+
+	linear, err := ioutil.ReadDir(inputDirLinear)
+	if err != nil {
+		return fmt.Errorf("cannot read linear stress input directory: %w", err)
+	}
+
+	fmt.Printf("discovered %v files\n", len(files))
+
+	fmt.Printf("Start Loading Files...")
+
+	for _, f := range linear {
+		b, err := ioutil.ReadFile(path.Join(inputDirLinear, f.Name()))
+		if err != nil {
+			return fmt.Errorf("cannot read input file %s: %w", f, err)
+		}
+
+		input, err := strain.Decode(string(b))
+
+		if err != nil {
+			return fmt.Errorf("cannot decode input file %s: %w", f, err)
+		}
+		simulations = append(simulations, &model.Simulation{
+			Input: *input,
+		})
 	}
 
 	fmt.Println("  done")
