@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"encoding/csv"
 	"errors"
 	"fmt"
 	"io/ioutil"
@@ -15,7 +16,6 @@ import (
 	"github.com/2785/n471-proj-carrot/internal/nanohub"
 	"github.com/2785/n471-proj-carrot/internal/strain"
 	"github.com/2785/n471-proj-carrot/model"
-	"github.com/manifoldco/promptui"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -296,10 +296,22 @@ func RootCmd(cmd *cobra.Command, args []string) error {
 	}
 	// Check if file exists
 	if _, err := os.Stat(csvDosPath); err == nil {
-		delPrompt := promptui.Prompt{
-			IsConfirm: true,
+		e := os.Remove(csvDosPath)
+		if e != nil {
+			return fmt.Errorf("cannot remove existing file: %w", e)
 		}
+	}
 
+	file, err := os.Create(csvDosPath)
+
+	if err != nil {
+		return fmt.Errorf("error creating file: %w", err)
+	}
+
+	err = csv.NewWriter(file).WriteAll(csvDos)
+
+	if err != nil {
+		return fmt.Errorf("error writing csv: %w", err)
 	}
 
 	return nil
