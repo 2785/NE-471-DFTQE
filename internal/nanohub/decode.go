@@ -57,7 +57,7 @@ func DecodeDoS(s string) (*model.DoSInfo, error) {
 			return nil, fmt.Errorf("could not convert to float: %w", err)
 		}
 
-		out.DoS[i] = model.DoSEntry{Energy: float32(e), Density: float32(d)}
+		out.DoS[i] = model.DoSEntry{Energy: e, Density: d}
 	}
 
 	for i, v := range fermiRecords {
@@ -70,7 +70,7 @@ func DecodeDoS(s string) (*model.DoSInfo, error) {
 			return nil, fmt.Errorf("could not convert to float: %w", err)
 		}
 
-		out.FermiLevel[i] = model.DoSEntry{Energy: float32(e), Density: float32(d)}
+		out.FermiLevel[i] = model.DoSEntry{Energy: e, Density: d}
 	}
 
 	return out, nil
@@ -128,8 +128,8 @@ func DecodeBands(s string) (*model.BandInfo, error) {
 			}
 
 			out.Bands[i][j] = model.BandEntry{
-				Energy: float32(e),
-				K:      float32(k),
+				Energy: e,
+				K:      k,
 			}
 		}
 	}
@@ -153,8 +153,8 @@ func DecodeBands(s string) (*model.BandInfo, error) {
 			}
 
 			symmEntry[i][j] = model.BandEntry{
-				Energy: float32(e),
-				K:      float32(k),
+				Energy: e,
+				K:      k,
 			}
 		}
 
@@ -182,8 +182,8 @@ func DecodeBands(s string) (*model.BandInfo, error) {
 		}
 
 		out.FermiLevel[i] = model.BandEntry{
-			K:      float32(k),
-			Energy: float32(e),
+			K:      k,
+			Energy: e,
 		}
 
 	}

@@ -1,5 +1,7 @@
 package model
 
+import "sort"
+
 // Input .
 type Input struct {
 	Ga, As, XRef, YRef, ZRef Coord
@@ -12,8 +14,8 @@ type Coord struct {
 
 // DoSEntry .
 type DoSEntry struct {
-	Energy  float32
-	Density float32
+	Energy  float64
+	Density float64
 }
 
 // DoSInfo .
@@ -24,8 +26,8 @@ type DoSInfo struct {
 
 // BandEntry .
 type BandEntry struct {
-	K      float32
-	Energy float32
+	K      float64
+	Energy float64
 }
 
 // BandSymmetry .
@@ -45,4 +47,24 @@ type Simulation struct {
 	Input Input
 	DoS   DoSInfo
 	Bands BandInfo
+}
+
+// BandGap ...
+func (sim *Simulation) BandGap() float64 {
+	hi := []float64{}
+	lo := []float64{}
+	for _, v := range sim.Bands.Bands {
+		for _, vi := range v {
+			if vi.Energy > sim.DoS.FermiLevel[0].Energy {
+				hi = append(hi, vi.Energy)
+			} else {
+				lo = append(lo, vi.Energy)
+			}
+		}
+	}
+
+	sort.Float64s(hi)
+	sort.Float64s(lo)
+
+	return hi[0] - lo[len(lo)-1]
 }

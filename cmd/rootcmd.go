@@ -270,8 +270,9 @@ func RootCmd(cmd *cobra.Command, args []string) error {
 
 	outPath := "./csv_out"
 
-	dosFileName := "dos.csv" // file contains dos curves for varying stress in the same axis
-	// 6.1 First Plot csv:
+	dosFileName := "dosAll.csv" // file contains dos curves for varying stress in the same axis
+
+	// 6.1 Plot DoS of various stress values over the same axes
 	csvDos := make([][]string, len(simulations[0].DoS.DoS)+1)
 
 	csvDos[0] = make([]string, numSets+1)
@@ -309,6 +310,39 @@ func RootCmd(cmd *cobra.Command, args []string) error {
 	}
 
 	err = csv.NewWriter(file).WriteAll(csvDos)
+
+	if err != nil {
+		return fmt.Errorf("error writing csv: %w", err)
+	}
+
+	// 6.2 Plot fermi level over changing stress in same axes
+
+	fermiFileName := "fermiAll.csv"
+
+	fermiAll := make([][]string, numSets+1)
+
+	fermiAll[0] = []string{"Run", "Energy (eV)"}
+
+	for i := 0; i < numSets; i++ {
+		fermiAll[i+1] = []string{fmt.Sprintf("%v", i*numAxes+1), fmt.Sprintf("%v", simulations[i*numAxes].DoS.FermiLevel[0].Energy)}
+	}
+
+	fermiAllPath, err := filepath.Abs(path.Join(outPath, fermiFileName))
+
+	if _, err := os.Stat(fermiAllPath); err == nil {
+		e := os.Remove(fermiAllPath)
+		if e != nil {
+			return fmt.Errorf("cannot remove existing file: %w", e)
+		}
+	}
+
+	file, err = os.Create(fermiAllPath)
+
+	if err != nil {
+		return fmt.Errorf("error creating file: %w", err)
+	}
+
+	err = csv.NewWriter(file).WriteAll(fermiAll)
 
 	if err != nil {
 		return fmt.Errorf("error writing csv: %w", err)
