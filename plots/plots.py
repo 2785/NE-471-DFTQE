@@ -1,5 +1,6 @@
 import pandas as pd
 import matplotlib.pyplot as plt
+import copy
 
 ### DOS ALL ###
 
@@ -128,15 +129,17 @@ plt.close()
 data = pd.read_csv(
     "./csv_out/fermi.csv",
     sep=",",
-    dtype={"energy": float},
+    dtype={"Run": float},
 )
 
+#copy the data out of the pandas dataframe to avoid modifying a data copy
+dataEnergy = data['Run'].copy(deep=True)
 # update run dataset to use correct percentage of max
-for i in range(len(data["Run"])):
-    data["Run"][i] = ((data["Run"][i] - 1) * 4/9) / 4
+for i in range(len(dataEnergy)):
+    dataEnergy[i] = ((dataEnergy[i] - 1) * 4/9) / 4
 
 plt.plot(
-    data["Run"],
+    dataEnergy,
     data["Energy (eV)"],
     label='Reference Axes on [0,0,0]'
 )
@@ -154,15 +157,17 @@ plt.close()
 data = pd.read_csv(
     "./csv_out/bandGap.csv",
     sep=",",
-    dtype={"energy": float},
+    dtype={"Run": float},
 )
 
+# copy out of the dataframe to guarentee a slice
+dataEnergy = data['Run'].copy(deep=True)
 # update run dataset to use correct percentage of max
-for i in range(len(data["Run"])):
-    data["Run"][i] = ((data["Run"][i] - 121) * 4/9) / 4
+for i in range(len(dataEnergy)):
+    dataEnergy[i] = ((dataEnergy[i] - 121) * 4/9) / 4
 
 plt.plot(
-    data["Run"],
+    dataEnergy,
     data["Band Gap Energy (eV)"],
     label='Reference Axes on [0,0,0]'
 )
