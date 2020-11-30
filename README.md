@@ -1,10 +1,5 @@
-# n471-proj-carrot
+# NE471 Student Project: DFT Quantum Espresso Simulation
 
-1: uniform stress on the principle axes
-2: uniform stress on principle axes, non uniform sheer
-3: non uniform stress on principle axes
-4: non uniform stress on principle axes, non uniform sheer
-5: non uniform stress, non uniform sheer
+This project holds the code and data produced to fulfill the NE471 final project. 
 
-1 - 3
-1 - 2
+The go module component of the project is used for parsing the output data of the quantum hub simulations, `strain_calcs` contains the strain solver given a stress value as well as the simulation outputs, `plots` contains the python script used to generate the plots. 
