@@ -33,9 +33,11 @@ plt.savefig("dos_plot1v2.png")
 plt.close()
 
 # Plot uniform stress and Shear vs non-uniform stress non-uniform Shear 3 v 4
-plt.plot(data["Energy (eV)"], data[f"Run #{49}"], label="Uniform Stress Plus Shear")
+plt.plot(data["Energy (eV)"], data[f"Run #{49}"], label="Non-Uniform Stress Plus Shear")
 plt.plot(data["Energy (eV)"], data[f"Run #{73}"], label="Non-Uniform Stress Plus Shear")
-plt.title("DOS for Non-Uniform Stress vs Uniform Stress and Shear On Principle Axes")
+plt.title(
+    "DOS for Non-Uniform Stress vs Non-Uniform\nStress and Shear On Principle Axes"
+)
 plt.xlabel("Energy (ev)")
 plt.ylabel("Density of States")
 plt.legend()
@@ -68,7 +70,7 @@ plt.plot(
     marker="o",
     markersize=10,
     linestyle="None",
-    label="Reference Axes on [0,0,0]",
+    label="Reference Axes on [1,0,0]",
 )
 
 plt.title("Fermi Level for Different Stress Strain Combinations")
@@ -94,10 +96,10 @@ plt.plot(
     marker="o",
     markersize=10,
     linestyle="None",
-    label="Reference Axes on [0,0,0]",
+    label="Reference Axes on [1,0,0]",
 )
 
-plt.title("Fermi Level for Different Stress Strain Combinations")
+plt.title("Band Gap Energy for Different Stress Strain Combinations")
 plt.xlabel("Run Number")
 plt.ylabel("Band Gap Energy (eV)")
 plt.legend()
@@ -138,7 +140,7 @@ dataEnergy = data["Run"].copy(deep=True)
 for i in range(len(dataEnergy)):
     dataEnergy[i] = ((dataEnergy[i] - 1) * 4 / 9) / 4
 
-plt.plot(dataEnergy, data["Energy (eV)"], label="Reference Axes on [0,0,0]")
+plt.plot(dataEnergy, data["Energy (eV)"], label="Reference Axes on [1,0,0]")
 
 plt.title("Fermi Level for Increasing Uniform Stress (Max 4 GPA)")
 plt.xlabel("Percentage of Max Stress")
@@ -162,7 +164,7 @@ dataEnergy = data["Run"].copy(deep=True)
 for i in range(len(dataEnergy)):
     dataEnergy[i] = ((dataEnergy[i] - 121) * 4 / 9) / 4
 
-plt.plot(dataEnergy, data["Band Gap Energy (eV)"], label="Reference Axes on [0,0,0]")
+plt.plot(dataEnergy, data["Band Gap Energy (eV)"], label="Reference Axes on [1,0,0]")
 
 plt.title("Band Gap for Increasing Uniform Stress (Max 4 GPA)")
 plt.xlabel("Percentage of Max Stress")

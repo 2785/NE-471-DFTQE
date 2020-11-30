@@ -392,7 +392,7 @@ func RootCmd(cmd *cobra.Command, args []string) error {
 
 	for i := 1; i < len(csvDos); i++ {
 		csvDos[i] = make([]string, len(someOtherThingySet)+1)
-		csvDos[i][0] = fmt.Sprintf("%v", len(thingySets)+i)
+		csvDos[i][0] = fmt.Sprintf("%.6g", simulations[0].DoS.DoS[i-1].Energy)
 	}
 
 	for i, v := range someOtherThingySet {
