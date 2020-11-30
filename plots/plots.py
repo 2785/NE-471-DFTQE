@@ -22,30 +22,30 @@ plt.legend()
 plt.savefig("dos_plot1v3.png")
 plt.close()
 
-# Plot uniform stress vs uniform stress non-uniform sheer 1 v 2
+# Plot uniform stress vs uniform stress non-uniform Shear 1 v 2
 plt.plot(data["Energy (eV)"], data[f"Run #{1}"], label="Uniform Stress")
-plt.plot(data["Energy (eV)"], data[f"Run #{25}"], label="Uniform Stress Plus Sheer")
-plt.title("DOS for Uniform Stress vs Uniform Stress and Non-uniform Sheer")
+plt.plot(data["Energy (eV)"], data[f"Run #{25}"], label="Uniform Stress Plus Shear")
+plt.title("DOS for Uniform Stress vs Uniform Stress and Non-uniform Shear")
 plt.xlabel("Energy (ev)")
 plt.ylabel("Density of States")
 plt.legend()
 plt.savefig("dos_plot1v2.png")
 plt.close()
 
-# Plot uniform stress and Sheer vs non-uniform stress non-uniform sheer 3 v 4
-plt.plot(data["Energy (eV)"], data[f"Run #{49}"], label="Uniform Stress Plus Sheer")
-plt.plot(data["Energy (eV)"], data[f"Run #{73}"], label="Non-Uniform Stress Plus Sheer")
-plt.title("DOS for Non-Uniform Stress vs Uniform Stress and Sheer On Principle Axes")
+# Plot uniform stress and Shear vs non-uniform stress non-uniform Shear 3 v 4
+plt.plot(data["Energy (eV)"], data[f"Run #{49}"], label="Uniform Stress Plus Shear")
+plt.plot(data["Energy (eV)"], data[f"Run #{73}"], label="Non-Uniform Stress Plus Shear")
+plt.title("DOS for Non-Uniform Stress vs Uniform Stress and Shear On Principle Axes")
 plt.xlabel("Energy (ev)")
 plt.ylabel("Density of States")
 plt.legend()
 plt.savefig("dos_plot3v4.png")
 plt.close()
 
-# Plot uniform stress on principle axes vs stress and sheer 1 v 5
+# Plot uniform stress on principle axes vs stress and Shear 1 v 5
 plt.plot(data["Energy (eV)"], data[f"Run #{1}"], label="Uniform Stress")
-plt.plot(data["Energy (eV)"], data[f"Run #{97}"], label="Stress and Sheer")
-plt.title("DOS for Uniform Stress on Principle Axes vs Stress and Sheer")
+plt.plot(data["Energy (eV)"], data[f"Run #{97}"], label="Stress and Shear")
+plt.title("DOS for Uniform Stress on Principle Axes vs Stress and Shear")
 plt.xlabel("Energy (ev)")
 plt.ylabel("Density of States")
 plt.legend()
@@ -68,7 +68,7 @@ plt.plot(
     marker="o",
     markersize=10,
     linestyle="None",
-    label='Reference Axes on [0,0,0]'
+    label="Reference Axes on [0,0,0]",
 )
 
 plt.title("Fermi Level for Different Stress Strain Combinations")
@@ -94,7 +94,7 @@ plt.plot(
     marker="o",
     markersize=10,
     linestyle="None",
-    label='Reference Axes on [0,0,0]'
+    label="Reference Axes on [0,0,0]",
 )
 
 plt.title("Fermi Level for Different Stress Strain Combinations")
@@ -132,17 +132,13 @@ data = pd.read_csv(
     dtype={"Run": float},
 )
 
-#copy the data out of the pandas dataframe to avoid modifying a data copy
-dataEnergy = data['Run'].copy(deep=True)
+# copy the data out of the pandas dataframe to avoid modifying a data copy
+dataEnergy = data["Run"].copy(deep=True)
 # update run dataset to use correct percentage of max
 for i in range(len(dataEnergy)):
-    dataEnergy[i] = ((dataEnergy[i] - 1) * 4/9) / 4
+    dataEnergy[i] = ((dataEnergy[i] - 1) * 4 / 9) / 4
 
-plt.plot(
-    dataEnergy,
-    data["Energy (eV)"],
-    label='Reference Axes on [0,0,0]'
-)
+plt.plot(dataEnergy, data["Energy (eV)"], label="Reference Axes on [0,0,0]")
 
 plt.title("Fermi Level for Increasing Uniform Stress (Max 4 GPA)")
 plt.xlabel("Percentage of Max Stress")
@@ -161,16 +157,12 @@ data = pd.read_csv(
 )
 
 # copy out of the dataframe to guarentee a slice
-dataEnergy = data['Run'].copy(deep=True)
+dataEnergy = data["Run"].copy(deep=True)
 # update run dataset to use correct percentage of max
 for i in range(len(dataEnergy)):
-    dataEnergy[i] = ((dataEnergy[i] - 121) * 4/9) / 4
+    dataEnergy[i] = ((dataEnergy[i] - 121) * 4 / 9) / 4
 
-plt.plot(
-    dataEnergy,
-    data["Band Gap Energy (eV)"],
-    label='Reference Axes on [0,0,0]'
-)
+plt.plot(dataEnergy, data["Band Gap Energy (eV)"], label="Reference Axes on [0,0,0]")
 
 plt.title("Band Gap for Increasing Uniform Stress (Max 4 GPA)")
 plt.xlabel("Percentage of Max Stress")
