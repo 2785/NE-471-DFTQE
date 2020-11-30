@@ -102,61 +102,47 @@ folder = p.cwd() / "n471-proj-carrot" / "strain_calcs"
 # Modify folder to match your dir, currently on my dir. 
 name_cnt = 1
 compound = "Gallium Arsenide diamond structure\n"
-zipfile = folder / "verbose_test_files.tar.gz" #creates tarball file
+zipfile = folder / "inc_test_files.tar.gz" #creates tarball file
 # zipper = gz.open(zipfile, 'w')
 zipper = t.open(zipfile, 'w:gz')
-for g, x_val in enumerate(axis_vals):
-    ref_X = x_val
-    for h, y_val in enumerate(axis_vals):
-        if (h != g) and (x_val != y_val): 
-            ref_Y = y_val
+
+
+stresser = folder / "stress_inc.txt"
+stress = []
+with open(stresser, "r") as cs:
+    for o, line in enumerate(cs.readlines()):
+        row_val = line
+        temp = []
+        if "-" not in line:
+            while row_val != "\n":
+                delim = row_val.index(',')
+                temp += [float(row_val[:delim])*1e9,]
+                row_val = row_val[delim+1:]
+            stress += [temp,]
         else:
-            continue
-        for j, z_val in enumerate(axis_vals):
-            # if j != g and j != h: #or z_val == y_val: to take out duplicates
-            if (j != g) and (z_val != y_val): 
-                ref_Z= z_val
-                #set up some system to define the stress values. 
-
-                # file w/ stress matrices
-                # while file.readline() -> read the first line
-                # do all the stuff
-                # have mutiple zip folders
-
-                stresser = folder / "stress.txt"
-                stress = []
-                with open(stresser, "r") as cs:
-                    for o, line in enumerate(cs.readlines()):
-                        row_val = line
-                        temp = []
-                        if "-" not in line:
-                            while row_val != "\n":
-                                delim = row_val.index(',')
-                                temp += [float(row_val[:delim])*1e9,]
-                                row_val = row_val[delim+1:]
-                            stress += [temp,]
-                        else:
-                            # do the calculations
-                            (ga, ars) = calculator(ref_X, ref_Y, ref_Z, stress, c)
-                            # store the values in text file in the format for nanohub
-                            # open file
-                            fname = "nano_hub_test_"+str(name_cnt)+".txt"
-                            filename = fname
-                            f = open(filename, "w")
-                            f.write("2\n"+compound)
-                            f.write("Ga " + str(ga[0]) + " " + str(ga[1]) + " " + str(ga[2]) + "\n")
-                            f.write("As " + str(ars[0]) + " " + str(ars[1]) + " " + str(ars[2]) + "\n")
-                            f.write("---\n")
-                            f.write("X refaxis: " + str(x_val) + "\nY ref axis " + str(y_val) + "\nZ refaxis " + str(z_val) + "\n")
-                            f.close()
-                            cmd_clean = "rm " + filename.__str__()
-                            zipper.add(filename) # Adds file to tarball
-                            x_rm = os.system(cmd_clean) # Deletes original file
-                            name_cnt += 1
-                            stress = []
-                    cs.close()
-            else:
-                continue
+            # do the calculations
+            ref_X = axis_vals[0]
+            ref_Y = axis_vals[1]
+            ref_Z = axis_vals[2]
+            (ga, ars) = calculator(ref_X, ref_Y, ref_Z, stress, c)
+            # store the values in text file in the format for nanohub
+            # open file
+            fname = "nano_hub_test_"+str(name_cnt)+".txt"
+            filename = fname
+            f = open(filename, "w")
+            f.write("2\n"+compound)
+            f.write("Ga " + str(ga[0]) + " " + str(ga[1]) + " " + str(ga[2]) + "\n")
+            f.write("As " + str(ars[0]) + " " + str(ars[1]) + " " + str(ars[2]) + "\n")
+            # f.write("---\n")
+            # f.write("X refaxis: " + str(axis_vals[0]) + "\nY ref axis " + str(axis_vals[1]) + "\nZ refaxis " + str(axis_vals[2]) + "\n")
+            f.close()
+            cmd_clean = "rm " + filename.__str__()
+            zipper.add(filename) # Adds file to tarball
+            x_rm = os.system(cmd_clean) # Deletes original file
+            name_cnt += 1
+            stress = []
+    cs.close()
+    
 latticefile = "lattice.txt"
 with open(latticefile, 'w') as l:
     l.write("5.6325")
