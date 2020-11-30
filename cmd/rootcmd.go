@@ -348,6 +348,151 @@ func RootCmd(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("error writing csv: %w", err)
 	}
 
+	// 6.3 Plot band gap over changing stress in same axes
+
+	bgFileName := "bandGapAll.csv"
+
+	bgAll := make([][]string, numSets+1)
+
+	bgAll[0] = []string{"Run", "Band Gap Energy (eV)"}
+
+	for i := 0; i < numSets; i++ {
+		bgAll[i+1] = []string{fmt.Sprintf("%v", i*numAxes+1), fmt.Sprintf("%v", simulations[i*numAxes].BandGap())}
+	}
+
+	bgAllPath, err := filepath.Abs(path.Join(outPath, bgFileName))
+
+	if _, err := os.Stat(bgAllPath); err == nil {
+		e := os.Remove(bgAllPath)
+		if e != nil {
+			return fmt.Errorf("cannot remove existing file: %w", e)
+		}
+	}
+
+	file, err = os.Create(bgAllPath)
+
+	if err != nil {
+		return fmt.Errorf("error creating file: %w", err)
+	}
+
+	err = csv.NewWriter(file).WriteAll(bgAll)
+
+	if err != nil {
+		return fmt.Errorf("error writing csv: %w", err)
+	}
+
+	// 6.4 Plot DoS over 121 through 130
+
+	dosFileName = "dos.csv"
+
+	csvDos = make([][]string, len(simulations[0].DoS.DoS)+1)
+
+	csvDos[0] = make([]string, len(someOtherThingySet)+1)
+	csvDos[0][0] = "Energy (eV)"
+
+	for i := 1; i < len(csvDos); i++ {
+		csvDos[i] = make([]string, len(someOtherThingySet)+1)
+		csvDos[i][0] = fmt.Sprintf("%v", len(thingySets)+i)
+	}
+
+	for i, v := range someOtherThingySet {
+		csvDos[0][i+1] = fmt.Sprintf("Run #%v", numAxes*numSets+i+1)
+		for j := 1; j < len(csvDos); j++ {
+			csvDos[j][i+1] = fmt.Sprintf("%.6g", v.DoS.DoS[j-1].Density)
+		}
+	}
+
+	csvDosPath, err = filepath.Abs(path.Join(outPath, dosFileName))
+
+	if err != nil {
+		return fmt.Errorf("error resolving relative path: %w", err)
+	}
+	// Check if file exists
+	if _, err := os.Stat(csvDosPath); err == nil {
+		e := os.Remove(csvDosPath)
+		if e != nil {
+			return fmt.Errorf("cannot remove existing file: %w", e)
+		}
+	}
+
+	file, err = os.Create(csvDosPath)
+
+	if err != nil {
+		return fmt.Errorf("error creating file: %w", err)
+	}
+
+	err = csv.NewWriter(file).WriteAll(csvDos)
+
+	if err != nil {
+		return fmt.Errorf("error writing csv: %w", err)
+	}
+
+	// 6.5 Fermi over 121 through 130
+
+	fermiFileName = "fermi.csv"
+
+	fermi := make([][]string, len(someOtherThingySet)+1)
+
+	fermi[0] = []string{"Run", "Energy (eV)"}
+
+	for i := 0; i < len(someOtherThingySet); i++ {
+		fermi[i+1] = []string{fmt.Sprintf("%v", i+1), fmt.Sprintf("%v", someOtherThingySet[i].DoS.FermiLevel[0].Energy)}
+	}
+
+	fermiPath, err := filepath.Abs(path.Join(outPath, fermiFileName))
+
+	if _, err := os.Stat(fermiPath); err == nil {
+		e := os.Remove(fermiPath)
+		if e != nil {
+			return fmt.Errorf("cannot remove existing file: %w", e)
+		}
+	}
+
+	file, err = os.Create(fermiPath)
+
+	if err != nil {
+		return fmt.Errorf("error creating file: %w", err)
+	}
+
+	err = csv.NewWriter(file).WriteAll(fermi)
+
+	if err != nil {
+		return fmt.Errorf("error writing csv: %w", err)
+	}
+
+	// 6.6 Plot Band gap over 121 through 130
+
+	bgFileName = "bandGap.csv"
+
+	bg := make([][]string, len(simulations)-numSets*numAxes+1)
+
+	bg[0] = []string{"Run", "Band Gap Energy (eV)"}
+
+	for i := 0; i < len(simulations)-numSets*numAxes; i++ {
+		bg[i+1] = []string{fmt.Sprintf("%v", i+numSets*numAxes+1), fmt.Sprintf("%v", simulations[i+numSets*numAxes].BandGap())}
+	}
+
+	bgPath, err := filepath.Abs(path.Join(outPath, bgFileName))
+
+	if _, err := os.Stat(bgPath); err == nil {
+		e := os.Remove(bgPath)
+		if e != nil {
+			return fmt.Errorf("cannot remove existing file: %w", e)
+		}
+	}
+
+	file, err = os.Create(bgPath)
+
+	if err != nil {
+		return fmt.Errorf("error creating file: %w", err)
+	}
+
+	err = csv.NewWriter(file).WriteAll(bg)
+
+	if err != nil {
+		return fmt.Errorf("error writing csv: %w", err)
+	}
+
 	return nil
 }
 
